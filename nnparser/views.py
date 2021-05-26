@@ -5,9 +5,11 @@ import os
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
+import numpy as np
 
 from .logic.parser.CVParser import CVParser
 from .logic.ocr.OpticalCharacterRecognition import OpticalCharacterRecognition
+from .logic.nn.CVNetwork import *
 
 
 def index(request):
@@ -38,15 +40,37 @@ def cv(request):
             else:
                 file_data = parser.read_file()
 
-            print(file_data)
+            sections = parser.split_into_sections(file_data)
+            for section in sections[:4]:
+                print(section)
+                print("--------------------------------------------------")
+            print(len(sections))
 
-        # if it is image - use ocr and nlp to translate into text file and then extract data
-        # if pdf - extract data
-        # if word - extract data
+            # TODO fix :4 (cut 3 sections from doc)
+            for section in sections[:4]:
+                base_nn = BaseCVClassification()
 
-        # break into sections
+                # TODO replace with generator
+                nn_input = [0 for i in range(len(base_nn.keywords))]
+                print(len(nn_input))
+                for i in range(len(base_nn.keywords)):
+                    if base_nn.keywords[i] in section.lower():
+                        nn_input[i] = 1
 
-        # create and learn networks
+                training_input = np.array([[0, 0, 0, 0],
+                                           [0, 0, 0, 1]])
+                training_output = np.array([[0, 1]]).T
+
+                base_nn.train(training_input, training_output, 10000)
+
+                print(base_nn.think(np.array(nn_input)))
+
+                education_nn = EducationClassification()
+                experience_nn = ExperienceClassification()
+                skills_nn = SkillsClassification()
+        # TODO nlp data
+        metadata = ''
+
         # serialize
 
         # transfer into needed data format

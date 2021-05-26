@@ -1,4 +1,4 @@
-from BaseNeuralNetwork import BaseNeuralNetwork
+from .BaseNeuralNetwork import BaseNeuralNetwork
 
 
 class BaseCVClassification(BaseNeuralNetwork):

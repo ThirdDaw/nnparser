@@ -8,6 +8,9 @@ from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfparser import PDFParser
+from pdf2image import convert_from_path
+
+from nnparser.logic.ocr.OpticalCharacterRecognition import MultipleOpticalCharacterRecognition
 
 
 class CVParser:
@@ -18,6 +21,7 @@ class CVParser:
         if self.check_file_format() == 'doc' or self.check_file_format() == 'docx':
             data = textract.process(self.CVfile)
 
+            print('RETURNING DOC OR DOCX DATA')
             return data
         elif self.check_file_format() == 'pdf':
             file = open(self.CVfile, 'rb')
@@ -29,7 +33,6 @@ class CVParser:
             data = ''
             for i in range(number_of_pages):
                 data += file_reader.getPage(i).extractText()
-                print(file_reader.getPage(i).extractText())
 
             if data.strip() == '':
                 output_string = StringIO()
@@ -44,7 +47,30 @@ class CVParser:
 
                 data = output_string.getvalue()
 
-            return data
+                if self.data_is_valid(data):
+                    print('RETURNING VALID PDF DATA')
+                    return data
+                else:
+                    data = ''
+
+                    images = convert_from_path(self.CVfile,
+                                               poppler_path=r'C:\Users\ThreeDaws\Desktop\poppler-21.03.0\Library\bin')
+
+                    filenames = []
+                    for i in range(len(images)):
+                        filename = ''.join(('tmp/', str(i + 10), '.jpg'))
+                        images[i].save(filename)
+                        filenames.append(filename)
+
+                    ocr = MultipleOpticalCharacterRecognition(filenames)
+                    for i in range(len(filenames)):
+                        data += ocr.get_image_text(i)
+
+                    print('RETURNING OCR PDF DATA')
+                    return data
+            else:
+                print('RETURNING PDF DATA')
+                return data
 
     def check_file_format(self):
         return self.CVfile.split("/")[-1].split(".")[-1]
@@ -52,5 +78,12 @@ class CVParser:
     def get_filename(self):
         return self.CVfile.split("/")[-1]
 
-    def split_into_sections(self):
-        pass
+    @staticmethod
+    def split_into_sections(data):
+        data = data.decode('utf-8')
+        sections = data.split("\n\n\n\n")
+        return sections
+
+    @staticmethod
+    def data_is_valid(data):
+        return False
