@@ -7,6 +7,7 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 
 from .logic.parser.CVParser import CVParser
+from .logic.ocr.OpticalCharacterRecognition import OpticalCharacterRecognition
 
 
 def index(request):
@@ -27,23 +28,28 @@ def cv(request):
 
             parser = CVParser(tmp_file)
 
-            saved_file_format = parser.check_file_format()
+            saved_file_format = parser.check_file_format().lower()  # TODO delete lower
             saved_filename = parser.get_filename()
 
-            print(saved_file_format, saved_filename)
+            if saved_file_format == "jpg" or saved_file_format == "jpeg" or saved_file_format == "png":
+                ocr = OpticalCharacterRecognition(tmp_file)
 
-            # check if files are images or other format
+                file_data = ocr.get_image_text()
+            else:
+                file_data = parser.read_file()
 
-            # if it is image - use ocr and nlp to translate into text file and then extract data
-            # if pdf - extract data
-            # if word - extract data
+            print(file_data)
 
-            # break into sections
+        # if it is image - use ocr and nlp to translate into text file and then extract data
+        # if pdf - extract data
+        # if word - extract data
 
-            # create and learn networks
-            # serialize
+        # break into sections
 
-            # transfer into needed data format
+        # create and learn networks
+        # serialize
+
+        # transfer into needed data format
 
     return render(request, 'nnparser/cv.html')
 
