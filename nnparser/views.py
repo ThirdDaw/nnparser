@@ -1,26 +1,12 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
-from .forms import FileFieldForm
+import os
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
 
-
-class CVFileFieldFormView(FormView):
-    form_class = FileFieldForm
-    template_name = 'nnparser/cv.html'
-    success_url = reverse_lazy('cv')
-
-    def get(self, request, *args, **kwargs):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        files = request.FILES.getlist('file_field')
-        print(files)
-        if form.is_valid():
-            print("yes")
-            for f in files:
-                print(f)
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
+from .logic.parser.CVParser import CVParser
 
 
 def index(request):
@@ -33,7 +19,31 @@ def cv(request):
         files = request.FILES.getlist('file_field')
 
         for f in files:
-            print(f)
+            file_format = f.name.split(".")[-1]
+            file_path = "".join(("tmp/2.", file_format))
+
+            path = default_storage.save(file_path, ContentFile(f.read()))
+            tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+
+            parser = CVParser(tmp_file)
+
+            saved_file_format = parser.check_file_format()
+            saved_filename = parser.get_filename()
+
+            print(saved_file_format, saved_filename)
+
+            # check if files are images or other format
+
+            # if it is image - use ocr and nlp to translate into text file and then extract data
+            # if pdf - extract data
+            # if word - extract data
+
+            # break into sections
+
+            # create and learn networks
+            # serialize
+
+            # transfer into needed data format
 
     return render(request, 'nnparser/cv.html')
 

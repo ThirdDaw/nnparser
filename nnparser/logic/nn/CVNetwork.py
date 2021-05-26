@@ -2,7 +2,7 @@ from BaseNeuralNetwork import BaseNeuralNetwork
 
 
 class BaseCVClassification(BaseNeuralNetwork):
-    keywords = ["cv", "curriculum vitae", "resume"]
+    keywords = ["cv", "curriculum vitae", "resume", "summary"]
 
 
 class EducationClassification(BaseNeuralNetwork):
