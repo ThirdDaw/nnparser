@@ -1,8 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="mb-3">
-        <label for="formFileMultiple" class="form-label">SDS files</label>
-        <input class="form-control" type="file" id="formFileMultiple" multiple>
-    </div>
+    <form method='POST' action="{% url 'sds' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group m-3">
+            <label for="formFileMultiple" class="form-label">SDS files</label>
+            <input class="form-control" type="file" id="file_field" multiple name="file_field" required>
+        </div>
+
+        <button type='submit' class="btn btn-primary m-3">Submit</button>
+    </form>
 {% endblock %}

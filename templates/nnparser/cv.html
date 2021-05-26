@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <form action="{% url 'cv' %}" class="row g-3" method="get">
-    {% csrf_token %}
-        <div class="mb-3">
+    <form method='POST' action="{% url 'cv' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group m-3">
             <label for="formFileMultiple" class="form-label">CV files</label>
-            <input class="form-control" type="file" id="formFileMultiple" multiple name="file_field">
+            <input class="form-control" type="file" id="file_field" multiple name="file_field" required>
         </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-primary mb-3">Confirm</button>
-        </div>
+
+        <button type='submit' class="btn btn-primary m-3">Submit</button>
     </form>
 {% endblock %}

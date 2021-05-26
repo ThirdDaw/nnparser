@@ -12,7 +12,6 @@ class CVFileFieldFormView(FormView):
     def get(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        print(form)
         files = request.FILES.getlist('file_field')
         print(files)
         if form.is_valid():
@@ -29,8 +28,22 @@ def index(request):
 
 
 def cv(request):
+    if request.method == "POST":
+        data = request.POST
+        files = request.FILES.getlist('file_field')
+
+        for f in files:
+            print(f)
+
     return render(request, 'nnparser/cv.html')
 
 
 def sds(request):
+    if request.method == "POST":
+        data = request.POST
+        files = request.FILES.getlist('file_field')
+
+        for f in files:
+            print(f)
+
     return render(request, 'nnparser/sds.html')
