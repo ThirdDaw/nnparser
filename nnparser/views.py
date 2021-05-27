@@ -63,6 +63,8 @@ def cv(request):
 
                 base_nn.train(training_input, training_output, 10000)
 
+                print(nn_input)
+                print(np.array(nn_input))
                 print(base_nn.think(np.array(nn_input)))
 
                 education_nn = EducationClassification()

@@ -1,4 +1,5 @@
 import numpy as np
+from nnparser.logic.utils.TrainingFileReader import TrainingFileReader
 
 
 class NeuralNetwork():
@@ -9,7 +10,7 @@ class NeuralNetwork():
 
         # Set synaptic weights to a 3x1 matrix,
         # with values from -1 to 1 and mean 0
-        self.synaptic_weights = 2 * np.random.random((3, 1)) - 1
+        self.synaptic_weights = 2 * np.random.random((4, 1)) - 1
 
     def sigmoid(self, x):
         """
@@ -55,32 +56,32 @@ class NeuralNetwork():
 
 
 if __name__ == "__main__":
-    # Initialize the single neuron neural network
-    neural_network = NeuralNetwork()
-
-    print("Random starting synaptic weights: ")
-    print(neural_network.synaptic_weights)
-
-    # The training set, with 4 examples consisting of 3
-    # input values and 1 output value
-    training_inputs = np.array([[0, 0, 1],
-                                [1, 1, 1],
-                                [1, 0, 1],
-                                [0, 1, 1],
-                                [1, 0, 0]])
-
-    training_outputs = np.array([[0, 1, 1, 0, 1]]).T
-
-    # Train the neural network
-    neural_network.train(training_inputs, training_outputs, 10000)
-
-    print("Synaptic weights after training: ")
-    print(neural_network.synaptic_weights)
-
-    A = str(input("Input 1: "))
-    B = str(input("Input 2: "))
-    C = str(input("Input 3: "))
-
-    print("New situation: input data = ", A, B, C)
-    print("Output data: ")
-    print(neural_network.think(np.array([A, B, C])))
+    reader = TrainingFileReader(r'C:\Users\ThreeDaws\Desktop\DissertationProject\nnparser\logic\nn\training_data\cv\base')
+    print(reader.get_training_input(reader.read_file()))
+    # # Initialize the single neuron neural network
+    # neural_network = NeuralNetwork()
+    #
+    # print("Random starting synaptic weights: ")
+    # print(neural_network.synaptic_weights)
+    #
+    # # The training set, with 4 examples consisting of 3
+    # # input values and 1 output value
+    # training_inputs = np.array([[0, 0, 0, 0],
+    #                             [0, 0, 0, 1]])
+    #
+    # training_outputs = np.array([[0, 1]]).T
+    #
+    # # Train the neural network
+    # neural_network.train(training_inputs, training_outputs, 10000)
+    #
+    # print("Synaptic weights after training: ")
+    # print(neural_network.synaptic_weights)
+    #
+    # A = str(input("Input 1: "))
+    # B = str(input("Input 2: "))
+    # C = str(input("Input 3: "))
+    # D = str(input("Input 4: "))
+    #
+    # print("New situation: input data = ", A, B, C, D)
+    # print("Output data: ")
+    # print(neural_network.think(np.array([A, B, C, D])))
