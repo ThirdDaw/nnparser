@@ -10,6 +10,8 @@ import numpy as np
 from .logic.parser.CVParser import CVParser
 from .logic.ocr.OpticalCharacterRecognition import OpticalCharacterRecognition
 from .logic.nn.CVNetwork import *
+from .logic.utils.TrainingFileReader import TrainingFileReader
+from nnparser.utils import *
 
 
 def index(request):
@@ -20,6 +22,11 @@ def cv(request):
     if request.method == "POST":
         data = request.POST
         files = request.FILES.getlist('file_field')
+
+        serialized = {"base": None,
+                      "education": None,
+                      "experience": None,
+                      "skills": None}
 
         for f in files:
             file_format = f.name.split(".")[-1]
@@ -41,39 +48,38 @@ def cv(request):
                 file_data = parser.read_file()
 
             sections = parser.split_into_sections(file_data)
-            for section in sections[:4]:
-                print(section)
-                print("--------------------------------------------------")
-            print(len(sections))
 
             # TODO fix :4 (cut 3 sections from doc)
+
             for section in sections[:4]:
-                base_nn = BaseCVClassification()
+                base_result = base_nn_work(section)
+                if base_result > 0.9:
+                    if not serialized["base"]:
+                        serialized["base"] = section
+                        continue
 
-                # TODO replace with generator
-                nn_input = [0 for i in range(len(base_nn.keywords))]
-                print(len(nn_input))
-                for i in range(len(base_nn.keywords)):
-                    if base_nn.keywords[i] in section.lower():
-                        nn_input[i] = 1
+                education_result = education_nn_work(section)
+                if education_result > 0.9:
+                    if not serialized["education"]:
+                        serialized["education"] = section
+                        continue
 
-                training_input = np.array([[0, 0, 0, 0],
-                                           [0, 0, 0, 1]])
-                training_output = np.array([[0, 1]]).T
+                experience_result = experience_nn_work(section)
+                if experience_result > 0.9:
+                    if not serialized["experience"]:
+                        serialized["experience"] = section
+                        continue
 
-                base_nn.train(training_input, training_output, 10000)
+                skills_result = skills_nn_work(section)
+                if skills_result > 0.9:
+                    if not serialized["skills"]:
+                        serialized["skills"] = section
+                        continue
 
-                print(nn_input)
-                print(np.array(nn_input))
-                print(base_nn.think(np.array(nn_input)))
-
-                education_nn = EducationClassification()
-                experience_nn = ExperienceClassification()
-                skills_nn = SkillsClassification()
         # TODO nlp data
         metadata = ''
 
-        # serialize
+        print(serialized)
 
         # transfer into needed data format
 

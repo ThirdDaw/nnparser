@@ -18,4 +18,4 @@ class ExperienceClassification(BaseNeuralNetwork):
 
 class SkillsClassification(BaseNeuralNetwork):
     criteria_number = 3
-    keywords = ["skills", "communication", "communicating"]
+    keywords = ["skill", "communication", "communicating"]

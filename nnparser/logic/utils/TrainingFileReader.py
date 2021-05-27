@@ -11,7 +11,12 @@ class TrainingFileReader:
     def get_training_input(data):
         input_data = []
         for line in data:
-            input_data.append(list(line.split("-")[0]))
+            line_list = line.split("-")[0]
+            num_list = []
+            for el in line_list:
+                num_list.append(int(el))
+
+            input_data.append(num_list)
 
         return input_data
 
