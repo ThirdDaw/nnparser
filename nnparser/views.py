@@ -1,5 +1,4 @@
 import json
-
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
@@ -8,29 +7,33 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
 import numpy as np
+import spacy
 
 from .logic.parser.CVParser import CVParser
+from .logic.parser.SDSParser import SDSParser
 from .logic.ocr.OpticalCharacterRecognition import OpticalCharacterRecognition
 from .logic.nn.CVNetwork import *
 from .logic.utils.TrainingFileReader import TrainingFileReader
 from nnparser.utils import *
+from .logic.nlp.NaturalLanguageProcessing import CVProcessor
 
 
 def index(request):
     return render(request, 'nnparser/index.html')
 
 
+# TODO change files name to time
 def cv(request):
     if request.method == "POST":
         data = request.POST
         files = request.FILES.getlist('file_field')
 
-        serialized = {"base": None,
-                      "education": None,
-                      "experience": None,
-                      "skills": None}
-
         for f in files:
+            serialized = {"base": '',
+                          "education": '',
+                          "experience": '',
+                          "skills": ''}
+
             file_format = f.name.split(".")[-1]
             file_path = "".join(("tmp/2.", file_format))
 
@@ -78,14 +81,14 @@ def cv(request):
                         serialized["skills"] = section
                         continue
 
-        # TODO nlp data
-        metadata = ''
+            nlp = CVProcessor(file_data)
+            metadata = nlp.generate_metadata()
 
-        print(serialized)
-        with open('tmp/serialized/data.json', 'w') as json_file:
-            json.dump(serialized, json_file)
+            resulting_file = {"data": serialized,
+                              "metadata": metadata}
 
-        # transfer into needed data format
+            with open('tmp/serialized/data.json', 'w') as json_file:
+                json.dump(resulting_file, json_file)
 
     return render(request, 'nnparser/cv.html')
 
@@ -96,6 +99,32 @@ def sds(request):
         files = request.FILES.getlist('file_field')
 
         for f in files:
-            print(f)
+            serialized = {"section1": None,
+                          "section2": None,
+                          "section3": None,
+                          "section4": None,
+                          "section5": None,
+                          "section6": None,
+                          "section7": None,
+                          "section8": None,
+                          "section0": None,
+                          "section10": None,
+                          "section11": None,
+                          "section12": None,
+                          "section13": None,
+                          "section14": None,
+                          "section15": None,
+                          "section16": None, }
+
+            file_format = f.name.split(".")[-1]
+            file_path = "".join(("tmp/2.", file_format))
+
+            path = default_storage.save(file_path, ContentFile(f.read()))
+            tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+
+            parser = SDSParser(tmp_file)
+
+            saved_file_format = parser.check_file_format().lower()
+            saved_filename = parser.get_filename()
 
     return render(request, 'nnparser/sds.html')

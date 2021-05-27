@@ -6,7 +6,10 @@ class SDSParser:
         pass
 
     def check_file_format(self):
-        pass
+        return self.SDSfile.split("/")[-1].split(".")[-1]
+
+    def get_filename(self):
+        return self.SDSfile.split("/")[-1]
 
     def split_into_sections(self):
         pass
