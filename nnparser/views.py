@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
@@ -37,7 +39,7 @@ def cv(request):
 
             parser = CVParser(tmp_file)
 
-            saved_file_format = parser.check_file_format().lower()  # TODO delete lower
+            saved_file_format = parser.check_file_format().lower()
             saved_filename = parser.get_filename()
 
             if saved_file_format == "jpg" or saved_file_format == "jpeg" or saved_file_format == "png":
@@ -80,6 +82,8 @@ def cv(request):
         metadata = ''
 
         print(serialized)
+        with open('tmp/serialized/data.json', 'w') as json_file:
+            json.dump(serialized, json_file)
 
         # transfer into needed data format
 

@@ -84,6 +84,7 @@ class CVParser:
         sections = data.split("\n\n\n\n")
         return sections
 
+    # TODO validator
     @staticmethod
     def data_is_valid(data):
         return False
