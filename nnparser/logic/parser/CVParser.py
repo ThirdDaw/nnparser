@@ -1,6 +1,5 @@
 import textract
 import PyPDF2
-from tika import parser
 from io import StringIO
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
